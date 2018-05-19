@@ -30,7 +30,7 @@ namespace MvcJqDataTables
         #endregion
 
         #region New Value
-        private bool? _autoWidth;
+        private bool? _autoWidth = false;
 
         private bool? _deferRender;
 
@@ -201,7 +201,6 @@ namespace MvcJqDataTables
                 stringBuilder.AppendFormat("serverSide:{0},", (object)this._serverSide.ToString().ToLower()).AppendLine();
             if (this._searching.HasValue)
                 stringBuilder.AppendFormat("searching:{0},", (object)this._searching.ToString().ToLower()).AppendLine();
-
             if (this._autoWidth.HasValue)
                 stringBuilder.AppendFormat("autoWidth:{0},", (object)this._autoWidth.ToString().ToLower()).AppendLine();
             if (this._deferRender.HasValue)
