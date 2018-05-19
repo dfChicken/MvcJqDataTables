@@ -55,6 +55,18 @@ namespace MvcJqDataTables
         //            this.orderable = true;
         //        }
 
+        public Column SetSearchable(bool canSearch)
+        {
+            this.searchable = canSearch;
+            return this;
+        }
+
+        public Column SetSearch(Search s)
+        {
+            this.search = s;
+            return this;
+        }
+
         public Column SetData(string data)
         {
             this.data = data;
@@ -113,6 +125,9 @@ namespace MvcJqDataTables
             if (this.orderable.HasValue)
                 stringBuilder.AppendFormat("orderable:{0},", (object)this.orderable.Value.ToString().ToLower()).AppendLine();
 
+            if (this.searchable.HasValue)
+                stringBuilder.AppendFormat("searchable:{0},", (object)this.searchable.Value.ToString().ToLower()).AppendLine();
+
             if (this.visible.HasValue)
                 stringBuilder.AppendFormat("visible:{0},", (object)this.visible.Value.ToString().ToLower()).AppendLine();
 
@@ -120,7 +135,7 @@ namespace MvcJqDataTables
                 stringBuilder.AppendFormat("width:'{0}',", (object)this.width).AppendLine();
 
             if (this._classes.Count > 0)
-                stringBuilder.AppendFormat("classes:'{0}',", (object) string.Join(" ", this._classes.Select<string, string>((Func<string, string>) (c => c)).ToArray<string>())).AppendLine();
+                stringBuilder.AppendFormat("classes:'{0}',", (object)string.Join(" ", this._classes.Select<string, string>((Func<string, string>)(c => c)).ToArray<string>())).AppendLine();
 
             if (!this.render.IsNullOrWhiteSpace())
                 stringBuilder.AppendFormat("render:{0}", (object)this.render).AppendLine();
@@ -133,6 +148,6 @@ namespace MvcJqDataTables
     public class Search
     {
         public string value { get; set; }
-        public string regex { get; set; }
+        public bool regex { get; set; }
     }
 }
