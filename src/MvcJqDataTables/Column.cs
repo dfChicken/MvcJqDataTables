@@ -147,6 +147,8 @@ namespace MvcJqDataTables
 
     public class Search
     {
+        public bool caseInsensitive { get; set; }
+        public bool smart { get; set; }
         public string value { get; set; }
         public bool regex { get; set; }
     }

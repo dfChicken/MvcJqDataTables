@@ -1,14 +1,16 @@
 ﻿@using MvcJqDataTables
 @{
     ViewBag.Title = "Home Page";
+    var s = new Guid().ToString();
 }
 
 @section scripts
 {
     <script type="text/javascript">
-        cc = function (d) {
-            console.log("hay lam dit me may`");
-            return "hay lam dit me may`";
+        cc = function( row, data, dataIndex ) {
+//            var id = "@s";
+//            console.log(id);
+//            console.log(data.Action);
         }
     </script>
 }
@@ -22,16 +24,12 @@
 <div class="row">
     <div class="col-md-12">
         @(Html.DataTable("SearchResultTable")
-                      .SetUrl(Url.Action("GetTestData"))
-                      .AddColumn(new Column("Id"))
-                      .AddColumn(new Column("Name"))
-                      .AddColumn(new Column("Description"))
-                      .AddExtraParameters(new List<Parameter>
-                      {
-              new DataParameter("cc", "hay lam dit me may"),
-              new DataParameter("uid", "hay lam dit me may"),
-              new FunctionParameter("user_id", "cc")
-                      })
+            .SetUrl(Url.Action("GetTestData"))
+            .AddColumn(new Column("Id").SetWidth("10%"))
+            .AddColumn(new Column("Name"))
+            .AddColumn(new Column("Description"))
+            .AddColumn(new Column("Action").SetTitle("Action").SetOrderable(false))
         )
+        
     </div>
 </div>

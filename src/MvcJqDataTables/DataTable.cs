@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace MvcJqDataTables
         private readonly string _id;
         private readonly List<Column> _columns = new List<Column>();
         private bool? _asyncLoad;
-        private bool _isCustomTable = false;
+        private bool? _isCustomTable = false;
 
-        #region Ajax
+        #region Data
 
         private string _url;
         private string _urlDataFile;
@@ -29,7 +30,7 @@ namespace MvcJqDataTables
 
         #endregion
 
-        #region New Value
+        #region Features
         private bool? _autoWidth = false;
 
         private bool? _deferRender;
@@ -54,6 +55,139 @@ namespace MvcJqDataTables
         private bool? _serverSide = true;
         //state save
         private bool? _stateSave;
+        #endregion
+
+        #region Callbacks
+
+        private string _onCreatedRow;
+        private string _onDrawCallback;
+        private string _onFooterCallback;
+        private string _onFormatNumber;
+        private string _onHeaderCallback;
+        private string _onInfoCallback;
+        private string _onInitComplete;
+        private string _onPreDrawCallback;
+        private string _onRowCallback;
+        private string _onStateLoadCallback;
+        private string _onStateLoaded;
+        private string _onStateLoadParams;
+        private string _onStateSaveCallback;
+        private string _onStateSaveParams;
+
+        #endregion
+
+        #region Options
+
+        //private List<int> _deferLoading = new List<int>();
+        private bool _destroy;
+        private int? _displayStart;
+        private string _dom;
+        private List<int> _lengthMenu = new List<int> { 5, 10, 15, 20, 50 };
+        private List<Order> _order = new List<Order>();
+//        private bool _orderCellsTop;
+//        private bool _orderClasses;
+//        private bool _orderFixed;
+//        private bool _orderMulti;
+        private int? _pageLength;
+        private string _pagingType;
+//        private IDictionary<string,string> _renderer;
+        private bool _retrieve; //multitable init
+        private string _rowId;
+        private bool _scrollCollapse;
+        private Search _search;
+//        private List<Search> _searchCols;
+        private int _searchDelay;
+        private int _stateDuration;
+        private List<string> _stripeClasses; //odd - even default
+        private int _tabIndex;
+
+        #endregion
+
+        #region Methods
+
+        public DataTable OnStateSaveParams(string onStateSaveParams)
+        {
+            this._onStateSaveParams = onStateSaveParams;
+            return this;
+        }
+
+        public DataTable OnStateSaveCallback(string onStateSaveCallback)
+        {
+            this._onStateSaveCallback = onStateSaveCallback;
+            return this;
+        }
+
+        public DataTable OnStateLoadParams(string onStateLoadParams)
+        {
+            this._onStateLoadParams = onStateLoadParams;
+            return this;
+        }
+
+        public DataTable OnStateLoaded(string onStateLoaded)
+        {
+            this._onStateLoaded = onStateLoaded;
+            return this;
+        }
+
+        public DataTable OnStateLoadCallback(string onStateLoadCallback)
+        {
+            this._onStateLoadCallback = onStateLoadCallback;
+            return this;
+        }
+
+        public DataTable OnRowCallback(string onRowCallback)
+        {
+            this._onRowCallback = onRowCallback;
+            return this;
+        }
+
+        public DataTable OnPreDrawCallback(string onPreDrawCallback)
+        {
+            this._onPreDrawCallback = onPreDrawCallback;
+            return this;
+        }
+
+        public DataTable OnInitComplete(string onInitComplete)
+        {
+            this._onInitComplete = onInitComplete;
+            return this;
+        }
+
+        public DataTable OnInfoCallback(string onInfoCallback)
+        {
+            this._onInfoCallback = onInfoCallback;
+            return this;
+        }
+
+        public DataTable OnHeaderCallback(string onHeaderCallback)
+        {
+            this._onHeaderCallback = onHeaderCallback;
+            return this;
+        }
+
+        public DataTable onFormatNumber(string onFormatNumber)
+        {
+            this._onFormatNumber = onFormatNumber;
+            return this;
+        }
+
+        public DataTable OnFooterCallback(string onFooterCallback)
+        {
+            this._onFooterCallback = onFooterCallback;
+            return this;
+        }
+
+        public DataTable OnDrawCallback(string onDrawCallback)
+        {
+            this._onDrawCallback = onDrawCallback;
+            return this;
+        }
+
+        public DataTable OnCreatedRow(string onCreatedRow)
+        {
+            this._onCreatedRow = onCreatedRow;
+            return this;
+        }
 
         public DataTable SetAutoWidth(bool autoWidth)
         {
@@ -140,8 +274,6 @@ namespace MvcJqDataTables
             return this;
         }
 
-        #endregion
-
         public DataTable SetUrlDataFile(string dataFilePath)
         {
             this._urlDataFile = dataFilePath;
@@ -185,6 +317,8 @@ namespace MvcJqDataTables
             return this;
         }
 
+        #endregion
+
         public string RenderJavascript()
         {
             var stringBuilder = new StringBuilder();
@@ -194,6 +328,8 @@ namespace MvcJqDataTables
                 stringBuilder.AppendLine("jQuery(document).ready(function () {");
 
             stringBuilder.AppendLine("jQuery('#" + this._id + "').DataTable({");
+
+            #region Features
 
             if (this._processing.HasValue)
                 stringBuilder.AppendFormat("processing:{0},", (object)this._processing.ToString().ToLower()).AppendLine();
@@ -218,8 +354,12 @@ namespace MvcJqDataTables
             if (this._stateSave.HasValue)
                 stringBuilder.AppendFormat("stateSave:{0},", (object)this._stateSave.ToString().ToLower()).AppendLine();
 
+            #endregion
+
             stringBuilder.AppendLine(
                 "dom:'<\"top\"<\"row\"<\"col-sm-5\"i><\"col-sm-7\"f>>>rt<\"bottom\"<\"row\"<\"col-sm-5\"l><\"col-sm-7\"p>>>',");
+
+            #region Data
 
             stringBuilder.AppendLine("ajax:{");
             if (!this._url.IsNullOrWhiteSpace() || !this._urlDataFile.IsNullOrWhiteSpace())
@@ -264,10 +404,58 @@ namespace MvcJqDataTables
                 }
                 if (!this._dataSrc.IsNullOrWhiteSpace())
                 {
-                    stringBuilder.AppendFormat(", dataSrc:'{0}'", (object) this._dataSrc);
+                    stringBuilder.AppendFormat(", dataSrc:'{0}'", (object)this._dataSrc);
                 }
             }
             stringBuilder.AppendLine("},");
+
+            #endregion
+
+            #region Callbacks
+
+            if (!this._onCreatedRow.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("createdRow:{0},", (object)this._onCreatedRow).AppendLine();
+
+            if (!this._onDrawCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("drawCallback:{0},", (object)this._onDrawCallback).AppendLine();
+
+            if (!this._onFooterCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("footerCallback:{0},", (object)this._onFooterCallback).AppendLine();
+
+            if (!this._onFormatNumber.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("formatNumber:{0},", (object)this._onFormatNumber).AppendLine();
+
+            if (!this._onHeaderCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("headerCallback:{0},", (object)this._onHeaderCallback).AppendLine();
+
+            if (!this._onInfoCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("infoCallback:{0},", (object)this._onInfoCallback).AppendLine();
+
+            if (!this._onInitComplete.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("initComplete:{0},", (object)this._onInitComplete).AppendLine();
+
+            if (!this._onPreDrawCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("preDrawCallback:{0},", (object)this._onPreDrawCallback).AppendLine();
+
+            if (!this._onRowCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("rowCallback:{0},", (object)this._onRowCallback).AppendLine();
+
+            if (!this._onStateLoadCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("stateLoadCallback:{0},", (object)this._onStateLoadCallback).AppendLine();
+
+            if (!this._onStateLoaded.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("stateLoaded:{0},", (object)this._onStateLoaded).AppendLine();
+
+            if (!this._onStateLoadParams.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("stateLoadParams:{0},", (object)this._onStateLoadParams).AppendLine();
+
+            if (!this._onStateSaveCallback.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("stateSaveCallback:{0},", (object)this._onStateSaveCallback).AppendLine();
+
+            if (!this._onStateSaveParams.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("stateSaveParams:{0},", (object)this._onStateSaveParams).AppendLine();
+
+            #endregion
 
             //columns join
             if (_columns.Count == 0)
@@ -284,10 +472,9 @@ namespace MvcJqDataTables
             return stringBuilder.ToString();
         }
 
-
         public string RenderHtmlElements()
         {
-            StringBuilder stringBuilder1 = new StringBuilder();
+            var stringBuilder1 = new StringBuilder();
 
             stringBuilder1.AppendFormat("<table id=\"{0}\" class=\"table table-striped table-bordered\"></table>", (object)this._id).AppendLine();
 
@@ -299,6 +486,7 @@ namespace MvcJqDataTables
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("<script type=\"text/javascript\">");
             stringBuilder.Append(this.RenderJavascript());
+            stringBuilder.AppendLine("$.fn.dataTable.ext.errMode = 'throw';");
             stringBuilder.AppendLine("</script>");
             return this.RenderHtmlElements() + stringBuilder.ToString();
         }
@@ -315,10 +503,6 @@ namespace MvcJqDataTables
 
         protected Parameter(string name)
         {
-//            if (this.GetType() == typeof(Parameter))
-//            {
-//                throw new ArgumentException("Use DataParameter or FunctionParameter instead.");
-//            }
             if (name.IsNullOrWhiteSpace())
             {
                 throw new ArgumentException("Parameter name must contain a value.");
@@ -326,7 +510,7 @@ namespace MvcJqDataTables
             this._paramName = name;
         }
     }
-    //Parameter với Data định sẵn
+    //Parameter with static data
     public class DataParameter : Parameter
     {
         private string _paramData { get; set; }
@@ -345,8 +529,8 @@ namespace MvcJqDataTables
             return _paramName + ": '" + this._paramData + "'";
         }
     }
-    //Parameter với Data có thể trả về bằng 1 function
-    //Cần khởi tạo function trong javascript code
+    //Parameter with data can be returned by a javascript function
+    //Initialize function in javascript first
     public class FunctionParameter : Parameter
     {
         private string _paramFunction { get; set; }

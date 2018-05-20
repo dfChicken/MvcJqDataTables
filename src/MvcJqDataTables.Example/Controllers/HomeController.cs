@@ -15,16 +15,19 @@ namespace MvcJqDataTables.Example.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetTestData(DataTableSettings model)
+        public ActionResult GetTestData(DataTableSettings model, ExtraParam modelParam)
         {
             var dt = new PostsData();
             var result = dt.Post.ToList();
+
+            var _result = from c in result select new{c.Id, c.Name, c.Description, Action = c.Description + c.Name};
+
             return Json(new
             {
                 draw = model.draw,
-                recordsTotal = result.Count,
-                recordsFiltered = result.Count,
-                data = result.ToArray()
+                recordsTotal = 5,
+                recordsFiltered = 10,
+                data = _result.ToList()
             }, JsonRequestBehavior.AllowGet);
         }
 

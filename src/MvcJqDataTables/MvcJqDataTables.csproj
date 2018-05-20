@@ -67,6 +67,8 @@
     <Compile Include="DataTableHelper.cs" />
     <Compile Include="DataTableModelBinder.cs" />
     <Compile Include="DataTableSettings.cs" />
+    <Compile Include="Enums\ErrorMode.cs" />
+    <Compile Include="Enums\PagingType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\NameConvention.cs" />
