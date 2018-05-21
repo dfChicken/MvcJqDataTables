@@ -35,26 +35,6 @@ namespace MvcJqDataTables
             this.orderable = true;
         }
 
-        //        public Column(string name, string data)
-        //        {
-        //            this.title = name;
-        //            this.name = name;
-        //            this.data = data;
-        //            this.visible = true;
-        //            this.searchable = false;
-        //            this.orderable = true;
-        //        }
-        //
-        //        public Column(string name, string data, string title)
-        //        {
-        //            this.title = title;
-        //            this.name = name;
-        //            this.data = data;
-        //            this.visible = true;
-        //            this.searchable = false;
-        //            this.orderable = true;
-        //        }
-
         public Column SetSearchable(bool canSearch)
         {
             this.searchable = canSearch;
@@ -147,9 +127,9 @@ namespace MvcJqDataTables
 
     public class Search
     {
-        public bool caseInsensitive { get; set; }
-        public bool smart { get; set; }
+        public bool? caseInsensitive { get; set; }
+        public bool? smart { get; set; }
         public string value { get; set; }
-        public bool regex { get; set; }
+        public bool? regex { get; set; }
     }
 }

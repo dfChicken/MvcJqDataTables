@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MvcJqDataTables.Enums;
 using MvcJqDataTables.Utility;
 
 namespace MvcJqDataTables
@@ -88,14 +90,16 @@ namespace MvcJqDataTables
 
             while (true)
             {
-                var _orderColumn = values.GetValue(String.Format(NameConvention.OrderColumn, index));
+                var _orderColumn = values.GetValue(string.Format(NameConvention.OrderColumn, index));
                 var orderColumn = 0;
                 if (!TryParse(_orderColumn, out orderColumn)) break;
 
-                var _orderDirection = values.GetValue(String.Format(NameConvention.OrderDirection, index));
-                TryParse(_orderDirection, out string orderDirection);
+                var _orderDirection = values.GetValue(string.Format(NameConvention.OrderDirection, index));
+                TryParse(_orderDirection, out string stringOrderDirection);
 
-                var order = new Order { column = orderColumn, dir = orderDirection };
+                var orderDirection = stringOrderDirection.Equals(OrderDirection.Asc.ToString().ToLower()) ? OrderDirection.Asc : OrderDirection.Desc;
+
+                var order = new Order(orderColumn, orderDirection);
 
                 orders.Add(order);
 

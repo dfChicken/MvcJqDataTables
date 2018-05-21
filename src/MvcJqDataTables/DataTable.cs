@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using MvcJqDataTables.Enums;
 using MvcJqDataTables.Extensions;
 
 namespace MvcJqDataTables
@@ -79,31 +80,135 @@ namespace MvcJqDataTables
         #region Options
 
         //private List<int> _deferLoading = new List<int>();
-        private bool _destroy;
+        //        private bool _destroy;
         private int? _displayStart;
         private string _dom;
-        private List<int> _lengthMenu = new List<int> { 5, 10, 15, 20, 50 };
+        private int[] _lengthMenu;
         private List<Order> _order = new List<Order>();
-//        private bool _orderCellsTop;
-//        private bool _orderClasses;
-//        private bool _orderFixed;
-//        private bool _orderMulti;
+        //        private bool _orderCellsTop;
+        //        private bool _orderClasses;
+        //        private bool _orderFixed;
+        //        private bool _orderMulti;
         private int? _pageLength;
-        private string _pagingType;
-//        private IDictionary<string,string> _renderer;
-        private bool _retrieve; //multitable init
+        private PagingType? _pagingType;
+        //        private IDictionary<string,string> _renderer;
+        //        private bool _retrieve; //multitable init
         private string _rowId;
-        private bool _scrollCollapse;
+        private bool? _scrollCollapse;
         private Search _search;
-//        private List<Search> _searchCols;
-        private int _searchDelay;
-        private int _stateDuration;
-        private List<string> _stripeClasses; //odd - even default
-        private int _tabIndex;
+        //        private List<Search> _searchCols;
+        private int? _searchDelay;
+        private int? _stateDuration;
+        private List<string> _stripeClasses = new List<string>(); //odd - even default
+        private int? _tabIndex;
 
         #endregion
 
         #region Methods
+
+        public DataTable SetTabIndex(int tabIndex)
+        {
+            this._tabIndex = tabIndex;
+            return this;
+        }
+
+        public DataTable SetStripeClasses(List<string> classes)
+        {
+            this._stripeClasses = classes;
+            return this;
+        }
+
+        public DataTable SetStateDuration(int duration)
+        {
+            this._stateDuration = duration;
+            return this;
+        }
+
+        public DataTable SetSearchDelay(int delay)
+        {
+            this._searchDelay = delay;
+            return this;
+        }
+
+        public DataTable SetSearch(string value)
+        {
+            if (this._search == null)
+                this._search = new Search();
+            this._search.value = value;
+            return this;
+        }
+
+        public DataTable SetSearchRegex(bool isRegex)
+        {
+            if (this._search == null)
+                this._search = new Search();
+            this._search.regex = isRegex;
+            return this;
+        }
+
+        public DataTable SetSearchCaseInsensitive(bool caseInsensitive)
+        {
+            if (this._search == null)
+                this._search = new Search();
+            this._search.caseInsensitive = caseInsensitive;
+            return this;
+        }
+
+        public DataTable SetSearchSmart(bool isSmartFilter)
+        {
+            if (this._search == null)
+                this._search = new Search();
+            this._search.smart = isSmartFilter;
+            return this;
+        }
+
+        public DataTable SetScrollCollapse(bool scrollCollapse)
+        {
+            this._scrollCollapse = scrollCollapse;
+            return this;
+        }
+
+        public DataTable SetRowId(string rowId)
+        {
+            this._rowId = rowId;
+            return this;
+        }
+
+        public DataTable SetPagingType(PagingType pagingType)
+        {
+            this._pagingType = pagingType;
+            return this;
+        }
+
+        public DataTable SetPageLength(int pageLength)
+        {
+            this._pageLength = pageLength;
+            return this;
+        }
+
+        public DataTable SetOrder(List<Order> order)
+        {
+            this._order = order;
+            return this;
+        }
+
+        public DataTable SetLengthMenu(int[] lengths)
+        {
+            this._lengthMenu = lengths;
+            return this;
+        }
+
+        public DataTable SetDomStructure(string domStructure)
+        {
+            this._dom = domStructure;
+            return this;
+        }
+
+        public DataTable SetDisplayStart(int displayStart)
+        {
+            this._displayStart = displayStart;
+            return this;
+        }
 
         public DataTable OnStateSaveParams(string onStateSaveParams)
         {
@@ -165,7 +270,7 @@ namespace MvcJqDataTables
             return this;
         }
 
-        public DataTable onFormatNumber(string onFormatNumber)
+        public DataTable OnFormatNumber(string onFormatNumber)
         {
             this._onFormatNumber = onFormatNumber;
             return this;
@@ -356,9 +461,6 @@ namespace MvcJqDataTables
 
             #endregion
 
-            stringBuilder.AppendLine(
-                "dom:'<\"top\"<\"row\"<\"col-sm-5\"i><\"col-sm-7\"f>>>rt<\"bottom\"<\"row\"<\"col-sm-5\"l><\"col-sm-7\"p>>>',");
-
             #region Data
 
             stringBuilder.AppendLine("ajax:{");
@@ -457,8 +559,71 @@ namespace MvcJqDataTables
 
             #endregion
 
+            #region Options
+
+            if (this._displayStart.HasValue)
+                stringBuilder.AppendFormat("displayStart:{0},", (object)this._displayStart.Value).AppendLine();
+
+            if (!this._dom.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("dom:{0},", (object)this._dom).AppendLine();
+            else
+                stringBuilder.AppendLine(
+                    "dom:'<\"top\"<\"row\"<\"col-sm-5\"i><\"col-sm-7\"f>>>rt<\"bottom\"<\"row\"<\"col-sm-5\"l><\"col-sm-7\"p>>>',");
+
+            if (this._lengthMenu != null)
+                stringBuilder.AppendFormat("lengthMenu:[{0}],", (object)string.Join(",", ((IEnumerable<int>)this._lengthMenu).Select<int, string>((Func<int, string>)(p => p.ToString())).ToArray<string>())).AppendLine();
+
+            if (this._order.Any())
+                stringBuilder.AppendFormat("order:[{0}],", (object)string.Join(", \n", this._order.Select(c => c.ToString()))).AppendLine();
+
+            if (this._pageLength.HasValue)
+                stringBuilder.AppendFormat("pageLength:{0},", (object)this._pageLength.Value).AppendLine();
+
+            if (this._pagingType.HasValue && !_pagingType.Value.GetStringValue().IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("pagingType:'{0}',", (object)this._pagingType.Value.GetStringValue()).AppendLine();
+
+            if (!this._rowId.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("rowId:{0},", (object)this._rowId).AppendLine();
+
+            if (this._scrollCollapse.HasValue)
+                stringBuilder.AppendFormat("scrollCollapse:{0},", (object)this._scrollCollapse.Value.ToString().ToLower()).AppendLine();
+
+            if (this._search != null)
+            {
+                stringBuilder.AppendLine("search: {");
+                if (!this._search.value.IsNullOrWhiteSpace())
+                    stringBuilder.AppendFormat("search:'{0}',", (object)this._search.value).AppendLine();
+                if (this._search.regex.HasValue)
+                    stringBuilder.AppendFormat("regex:{0},", (object)this._search.regex.Value.ToString().ToLower()).AppendLine();
+                if (this._search.caseInsensitive.HasValue)
+                    stringBuilder.AppendFormat("caseInsensitive:{0},", (object)this._search.caseInsensitive.Value.ToString().ToLower()).AppendLine();
+                if (this._search.smart.HasValue)
+                    stringBuilder.AppendFormat("smart:{0},", (object)this._search.smart.Value.ToString().ToLower()).AppendLine();
+                stringBuilder.AppendLine("}");
+            }
+
+            if (this._searchDelay.HasValue)
+                stringBuilder.AppendFormat("searchDelay:{0},", (object)this._searchDelay.Value).AppendLine();
+
+            if (this._stateDuration.HasValue)
+                stringBuilder.AppendFormat("stateDuration:{0},", (object)this._stateDuration.Value).AppendLine();
+
+            if (this._stripeClasses.Any())
+                stringBuilder.AppendFormat("stripeClasses:[{0}],", (object)string.Join(",", this._stripeClasses.Select(c => string.Format("'{0}'", c.ToString())))).AppendLine();
+
+            if (this._tabIndex.HasValue)
+                stringBuilder.AppendFormat("tabIndex:{0},", (object)this._tabIndex.Value).AppendLine();
+
+            #endregion
+
+            #region Columns
+
+            
+
+
+            #endregion
             //columns join
-            if (_columns.Count == 0)
+            if (this._columns.Count == 0)
             {
                 throw new ArgumentException("Table must have at least one column.");
             }
