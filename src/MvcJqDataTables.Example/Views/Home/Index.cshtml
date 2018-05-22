@@ -27,8 +27,8 @@
         @(Html.DataTable("SearchResultTable")
               .SetUrl(Url.Action("GetTestData"))
               .AddColumn(new Column("Id").SetWidth("10%"))
-              .AddColumn(new Column("Name"))
-              .AddColumn(new Column("Description"))
+              .AddColumn(new Column("Name").SetOrderData(new List<int>(){1,2,3}))
+              .AddColumn(new Column("Description").SetOrderSequence(new List<OrderDirection>(){OrderDirection.Asc, OrderDirection.Desc}))
               .AddColumn(new Column("Action").SetTitle("Action").SetOrderable(false))
               .SetLengthMenu(new [] { 5, 10, 15, 20, 50 }).SetPageLength(10)
               .SetOrder(new List<Order>
@@ -36,8 +36,7 @@
                   new Order(0,OrderDirection.Asc),
                   new Order(1,OrderDirection.Asc)
               })
-              .SetPagingType(PagingType.FirstLastNumber)
-              )
+              .SetPagingType(PagingType.FirstLastNumber))
 
     </div>
 </div>

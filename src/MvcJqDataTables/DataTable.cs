@@ -616,19 +616,13 @@ namespace MvcJqDataTables
 
             #endregion
 
-            #region Columns
-
-            
-
-
-            #endregion
             //columns join
             if (this._columns.Count == 0)
             {
                 throw new ArgumentException("Table must have at least one column.");
             }
             stringBuilder.AppendLine("columns: [");
-            string str1 = string.Join(",", this._columns.Select(c => c.ToString()).ToArray());
+            string str1 = string.Join(",\n", this._columns.Select(c => c.ToString()).ToArray());
             stringBuilder.AppendLine(str1);
             stringBuilder.AppendLine("]");
 
@@ -639,11 +633,11 @@ namespace MvcJqDataTables
 
         public string RenderHtmlElements()
         {
-            var stringBuilder1 = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            stringBuilder1.AppendFormat("<table id=\"{0}\" class=\"table table-striped table-bordered\"></table>", (object)this._id).AppendLine();
+            stringBuilder.AppendFormat("<table id=\"{0}\" class=\"table table-striped table-bordered\"></table>", (object)this._id).AppendLine();
 
-            return stringBuilder1.ToString();
+            return (this._isCustomTable.HasValue && this._isCustomTable.Value) ? "" : stringBuilder.ToString();
         }
 
         public override string ToString()

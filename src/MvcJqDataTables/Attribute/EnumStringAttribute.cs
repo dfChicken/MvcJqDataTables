@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MvcJqDataTables.Attribute
 {
+    [AttributeUsage(AttributeTargets.Field)]
     public class EnumStringAttribute : System.Attribute
     {
         private readonly string _value;

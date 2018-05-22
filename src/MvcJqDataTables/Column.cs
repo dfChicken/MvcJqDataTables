@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MvcJqDataTables.Attribute;
+using MvcJqDataTables.Enums;
 using MvcJqDataTables.Extensions;
 
 namespace MvcJqDataTables
@@ -18,10 +20,22 @@ namespace MvcJqDataTables
         private bool? visible { get; set; }
         private string width { get; set; }
         private string render { get; set; }
-        private readonly List<string> _classes = new List<string>();
 
         private Search search = new Search();
         private string type { get; set; }
+
+        #region Options
+
+        private string _cellType;
+        private string _className;
+        private string _contentPadding;
+        private string _createdCell;
+        private string _defaultContent;
+        private int[] _orderData;
+        //        private string _orderDataType; //disabled because it is live dom function
+        private List<OrderDirection> _orderSequence = new List<OrderDirection>();
+
+        #endregion
 
         public Column(string name, string data = null, string title = null)
         {
@@ -33,6 +47,50 @@ namespace MvcJqDataTables
             this.visible = true;
             this.searchable = false;
             this.orderable = true;
+        }
+
+        #region Methods
+
+        public Column SetOrderSequence(List<OrderDirection> orderSequence)
+        {
+            this._orderSequence = orderSequence;
+            return this;
+        }
+
+        public Column SetOrderData(List<int> orderColumnIndexList)
+        {
+            this._orderData = orderColumnIndexList.ToArray();
+            return this;
+        }
+
+        public Column SetDefaultContent(string defaultContent)
+        {
+            this._defaultContent = defaultContent;
+            return this;
+        }
+
+        public Column OnCreatedCell(string jsFunctionName)
+        {
+            this._createdCell = jsFunctionName;
+            return this;
+        }
+
+        public Column SetContentPadding(string contentPadding)
+        {
+            this._contentPadding = contentPadding;
+            return this;
+        }
+
+        public Column SetClassName(string clazzName)
+        {
+            this._className = clazzName;
+            return this;
+        }
+
+        public Column SetCellType(string cellType)
+        {
+            this._cellType = cellType;
+            return this;
         }
 
         public Column SetSearchable(bool canSearch)
@@ -83,11 +141,7 @@ namespace MvcJqDataTables
             return this;
         }
 
-        public Column AddClass(string className)
-        {
-            this._classes.Add(className);
-            return this;
-        }
+        #endregion
 
         public override string ToString()
         {
@@ -114,11 +168,44 @@ namespace MvcJqDataTables
             if (!this.width.IsNullOrWhiteSpace())
                 stringBuilder.AppendFormat("width:'{0}',", (object)this.width).AppendLine();
 
-            if (this._classes.Count > 0)
-                stringBuilder.AppendFormat("classes:'{0}',", (object)string.Join(" ", this._classes.Select<string, string>((Func<string, string>)(c => c)).ToArray<string>())).AppendLine();
-
             if (!this.render.IsNullOrWhiteSpace())
-                stringBuilder.AppendFormat("render:{0}", (object)this.render).AppendLine();
+                stringBuilder.AppendFormat("render:{0},", (object)this.render).AppendLine();
+
+            #region Options
+
+            if (!this._cellType.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("cellType:'{0}',", (object)this._cellType).AppendLine();
+
+            if (!this._className.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("className:'{0}',", (object)this._className).AppendLine();
+
+            if (!this._contentPadding.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("contentPadding:'{0}',", (object)this._contentPadding).AppendLine();
+
+            if (!this._createdCell.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("createdCell:'{0}',", (object)this._createdCell).AppendLine();
+
+            if (!this._defaultContent.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("defaultContent:'{0}',", (object)this._defaultContent).AppendLine();
+
+            if (this._orderData != null && this._orderData.Length > 0)
+            {
+                if (this._orderData.Length == 1)
+                {
+                    stringBuilder.AppendFormat("orderData:{0},", (object)this._orderData[0]).AppendLine();
+                }
+                else
+                {
+                    stringBuilder.AppendFormat("orderData:[{0}],", (object)string.Join(",", this._orderData.Select(c => c.ToString()))).AppendLine();
+                }
+            }
+
+            if (this._orderSequence.Count > 0 )
+            {
+                stringBuilder.AppendFormat("orderSequence:[{0}],", (object)string.Join(",", this._orderSequence.Select(c => string.Format("'{0}'", c.GetStringValue())))).AppendLine();
+            }
+
+            #endregion
 
             stringBuilder.Append("}");
             return stringBuilder.ToString();

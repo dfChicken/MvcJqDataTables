@@ -12,7 +12,7 @@ namespace MvcJqDataTables.Extensions
     {
         public static string GetStringValue(this Enum value)
         {
-            string output = "";
+            var output = "";
             var type = value.GetType();
             var fi = type.GetField(value.ToString());
 
