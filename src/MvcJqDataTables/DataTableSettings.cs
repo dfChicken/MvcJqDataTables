@@ -21,13 +21,23 @@ namespace MvcJqDataTables
 
     public class Order
     {
-        private int column { get; set; }
-        private OrderDirection dir { get; set; }
+        private int column { get; }
+        private OrderDirection dir { get; }
 
         public Order(int column, OrderDirection direction)
         {
             this.column = column;
             this.dir = direction;
+        }
+
+        public int GetColumn()
+        {
+            return column;
+        }
+
+        public string GetOrderDirection()
+        {
+            return dir.ToString().ToLower();
         }
 
         public override string ToString()

@@ -20,15 +20,32 @@ namespace MvcJqDataTables.Example.Controllers
             var dt = new PostsData();
             var result = dt.Post.ToList();
 
-            var _result = from c in result select new{c.Id, c.Name, c.Description, Action = c.Description + c.Name};
-
-            return Json(new
+            var jsonData = GetJsonObject(result.Count(), model, result, p => new IComparable[]
             {
-                draw = 0,
-                recordsTotal = _result.Count(),
-                recordsFiltered = _result.Count(),
-                data = _result.ToList()
-            }, JsonRequestBehavior.AllowGet);
+                p.Id,
+                p.Name,
+                p.Description,
+                p.Name + p.Description
+            });
+
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
+        }
+
+        public object GetJsonObject(int? totalRow, DataTableSettings dt, IEnumerable<Post> query, Func<Post, IComparable[]> funcSelectedProperties)
+        {
+            var selectQuery = query.ToList();
+
+            var total = totalRow.GetValueOrDefault();
+
+            var rows = selectQuery.Select(it => funcSelectedProperties.Invoke(it).ToList());
+            
+            return new
+            {
+                dt.draw,
+                recordsTotal = selectQuery.Count,
+                recordsFiltered = selectQuery.Count,
+                data = rows.ToArray(),
+            };
         }
 
         public ActionResult About()

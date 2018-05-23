@@ -37,19 +37,56 @@ namespace MvcJqDataTables
 
         #endregion
 
-        public Column(string name, string data = null, string title = null)
+        public Column(string name)
         {
             if (name.IsNullOrWhiteSpace())
                 throw new ArgumentException("No column name specified");
             this.name = name;
-            this.data = string.IsNullOrWhiteSpace(data) ? name : data;
-            this.title = string.IsNullOrWhiteSpace(title) ? name : title;
+            this.title = name;
+            this.visible = true;
+            this.searchable = false;
+            this.orderable = true;
+        }
+
+        public Column(string name, string title)
+        {
+            if (name.IsNullOrWhiteSpace())
+                throw new ArgumentException("No column name specified");
+            this.name = name;
+            this.title = title;
             this.visible = true;
             this.searchable = false;
             this.orderable = true;
         }
 
         #region Methods
+
+        public Column SetData(string data)
+        {
+            this.data = data;
+            return this;
+        }
+
+        public string GetData()
+        {
+            return this.data;
+        }
+
+        public Column SetTitle(string title)
+        {
+            this.title = title;
+            return this;
+        }
+
+        public string GetTitle()
+        {
+            return this.title;
+        }
+
+        public string GetName()
+        {
+            return this.name;
+        }
 
         public Column SetOrderSequence(List<OrderDirection> orderSequence)
         {
@@ -102,18 +139,6 @@ namespace MvcJqDataTables
         public Column SetSearch(Search s)
         {
             this.search = s;
-            return this;
-        }
-
-        public Column SetData(string data)
-        {
-            this.data = data;
-            return this;
-        }
-
-        public Column SetTitle(string title)
-        {
-            this.title = title;
             return this;
         }
 
