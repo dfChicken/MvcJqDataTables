@@ -19,6 +19,13 @@ namespace MvcJqDataTables
         private readonly List<Column> _columns = new List<Column>();
         private bool? _asyncLoad;
         private bool? _isCustomTable = false;
+        private string _externalSearchFormId;
+
+        public DataTable SetExternalSearchFormId(string extSearchFormId)
+        {
+            this._externalSearchFormId = extSearchFormId;
+            return this;
+        }
 
         #region Data
 
@@ -427,12 +434,17 @@ namespace MvcJqDataTables
         public string RenderJavascript()
         {
             var stringBuilder = new StringBuilder();
+            if (!this._url.IsNullOrWhiteSpace())
+            {
+                stringBuilder.AppendLine("var dataSource_" + this._id + " = '"+ this._url +"';");
+            }
+            stringBuilder.AppendLine("var tableInstance_" + this._id + " = undefined;");
             if (this._asyncLoad.HasValue && this._asyncLoad.Value)
                 stringBuilder.AppendLine("jQuery(window).ready(function () {");
             else
                 stringBuilder.AppendLine("jQuery(document).ready(function () {");
 
-            stringBuilder.AppendLine("jQuery('#" + this._id + "').DataTable({");
+            stringBuilder.AppendLine("tableInstance_" + this._id + " = jQuery('#" + this._id + "').DataTable({");
 
             #region Features
 
@@ -478,7 +490,7 @@ namespace MvcJqDataTables
                     //extra params
                     if (this._extraParams.Count > 0)
                     {
-                        if (this._extraParams.GroupBy(m => m._paramName).All(g => g.Count() == 1))
+                        if (this._extraParams.GroupBy(m => m.GetParameterName()).All(g => g.Count() == 1))
                         {
                             var stringDataParam = string.Join(", \n", this._extraParams.Where(c => c.GetType() == typeof(DataParameter)).Select(c => c.ToString()));
                             var stringFunctionParam = string.Join(", \n", this._extraParams.Where(c => c.GetType() == typeof(FunctionParameter)).Select(c => c.ToString()));
@@ -489,7 +501,7 @@ namespace MvcJqDataTables
                             }
                             else
                             {
-                                stringParam = stringDataParam ?? stringFunctionParam;
+                                stringParam = stringDataParam + stringFunctionParam;
                             }
                             stringBuilder.AppendLine(stringParam);
                         }
@@ -627,6 +639,7 @@ namespace MvcJqDataTables
             stringBuilder.AppendLine("]");
 
             stringBuilder.AppendLine("});");
+//            stringBuilder.AppendLine("console.log(\'Data Source: \'+ tableInstance_" + this._id + ".ajax.url());");
             stringBuilder.AppendLine("});");
             return stringBuilder.ToString();
         }
@@ -642,7 +655,7 @@ namespace MvcJqDataTables
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("<script type=\"text/javascript\">");
             stringBuilder.Append(this.RenderJavascript());
             stringBuilder.AppendLine("$.fn.dataTable.ext.errMode = 'throw';");
@@ -656,9 +669,9 @@ namespace MvcJqDataTables
         }
     }
 
-    public class Parameter
+    public abstract class Parameter
     {
-        public string _paramName { get; set; }
+        private string _paramName { get; }
 
         protected Parameter(string name)
         {
@@ -668,11 +681,16 @@ namespace MvcJqDataTables
             }
             this._paramName = name;
         }
+
+        public string GetParameterName()
+        {
+            return this._paramName;
+        }
     }
     //Parameter with static data
     public class DataParameter : Parameter
     {
-        private string _paramData { get; set; }
+        private string _paramData { get; }
 
         public DataParameter(string name, string data) : base(name)
         {
@@ -685,27 +703,27 @@ namespace MvcJqDataTables
 
         public override string ToString()
         {
-            return _paramName + ": '" + this._paramData + "'";
+            return GetParameterName() + ": '" + this._paramData + "'";
         }
     }
     //Parameter with data can be returned by a javascript function
     //Initialize function in javascript first
     public class FunctionParameter : Parameter
     {
-        private string _paramFunction { get; set; }
+        private string _paramFunction { get; }
 
-        public FunctionParameter(string name, string function) : base(name)
+        public FunctionParameter(string name, string jsFunction) : base(name)
         {
-            if (function.IsNullOrWhiteSpace())
+            if (jsFunction.IsNullOrWhiteSpace())
             {
                 throw new ArgumentException("Parameter function must contain a value.");
             }
-            this._paramFunction = function;
+            this._paramFunction = jsFunction;
         }
 
         public override string ToString()
         {
-            return _paramName + ": " + this._paramFunction;
+            return GetParameterName() + ": " + this._paramFunction;
         }
     }
 

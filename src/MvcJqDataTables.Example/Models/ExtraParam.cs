@@ -7,7 +7,7 @@ namespace MvcJqDataTables.Example.Models
 {
     public class ExtraParam
     {
-        public string ParentId { get; set; }
+        public string Id { get; set; }
         public string SubId { get; set; }
     }
 }

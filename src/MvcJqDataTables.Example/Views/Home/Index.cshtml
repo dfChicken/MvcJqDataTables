@@ -2,16 +2,19 @@
 @using MvcJqDataTables.Enums
 @{
     ViewBag.Title = "Home Page";
-    var s = new Guid().ToString();
 }
 
 @section scripts
 {
     <script type="text/javascript">
-        cc = function( row, data, dataIndex ) {
-//            var id = "@s";
-//            console.log(id);
-//            console.log(data.Action);
+        executeSearch = function () {
+            console.log("ext-search");
+        }
+
+        externalSearch_frmSearchPost = function () {
+            var paramStr = $("#frmSearchPost").serialize();
+            console.log(paramStr);
+            return $("#frmSearchPost").serialize();
         }
     </script>
 }
@@ -22,21 +25,56 @@
     <p><a href="https://github.com/dfChicken/MvcJqDataTables" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
 
+<form id="frmSearchPost">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row form-group">
+                <div class="col-xs-4">
+                    <label for="Id">Id</label>
+                </div>
+                <div class="col-xs-8">
+                    <input class="form-control" id="Id" name="Id" type="number" value="">
+                    <span class="field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row form-group">
+                <div class="col-xs-4">
+                    <label for="Name">Name</label>
+                </div>
+                <div class="col-xs-8">
+                    <input class="form-control" id="Name" name="Name" type="text" value="">
+                    <span class="field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="pull-right">
+                <button type="button" class="btn btn-primary" onclick="executeSearch();"><i class="fa fa-search"></i> Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
 <div class="row">
     <div class="col-md-12">
         @(Html.DataTable("SearchResultTable")
               .SetUrl(Url.Action("GetTestData"))
               .AddColumn(new Column("Id").SetWidth("10%"))
-              .AddColumn(new Column("Name").SetOrderData(new List<int>(){1,2,3}))
-              .AddColumn(new Column("Description").SetOrderSequence(new List<OrderDirection>(){OrderDirection.Asc, OrderDirection.Desc}))
+              .AddColumn(new Column("Name"))
+              .AddColumn(new Column("Description"))
               .AddColumn(new Column("Action").SetTitle("Action").SetOrderable(false))
-              .SetLengthMenu(new [] { 5, 10, 15, 20, 50 }).SetPageLength(10)
-              .SetOrder(new List<Order>
+              .SetLengthMenu(new[] { 5, 10, 15, 20, 50 }).SetPageLength(10)
+              .AddExtraParameters(new List<Parameter>()
               {
-                  new Order(0,OrderDirection.Asc),
-                  new Order(1,OrderDirection.Asc)
+                  new DataParameter("cc","coincard"),
+                  new FunctionParameter("cc2","executeSearch")
               })
-              .SetPagingType(PagingType.FirstLastNumber))
+              )
 
     </div>
 </div>
+<script type="text/javascript">
+
+</script>

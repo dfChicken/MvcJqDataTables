@@ -24,9 +24,9 @@ namespace MvcJqDataTables.Example.Controllers
 
             return Json(new
             {
-                draw = model.draw,
-                recordsTotal = 5,
-                recordsFiltered = 10,
+                draw = 0,
+                recordsTotal = _result.Count(),
+                recordsFiltered = _result.Count(),
                 data = _result.ToList()
             }, JsonRequestBehavior.AllowGet);
         }
