@@ -148,6 +148,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\datatables\buttons.bootstrap.css" />
+    <Content Include="Content\datatables\buttons.bootstrap.min.css" />
     <Content Include="Content\datatables\dataTables.bootstrap.css" />
     <Content Include="Content\datatables\dataTables.bootstrap.min.css" />
     <Content Include="Content\datatables\jquery.dataTables.css" />
@@ -205,8 +207,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\datatables\buttons.bootstrap.js" />
+    <Content Include="Scripts\datatables\buttons.bootstrap.min.js" />
     <Content Include="Scripts\datatables\dataTables.bootstrap.js" />
     <Content Include="Scripts\datatables\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\datatables\dataTables.buttons.js" />
+    <Content Include="Scripts\datatables\dataTables.buttons.min.js" />
     <Content Include="Scripts\datatables\dataTables.scroller.js" />
     <Content Include="Scripts\datatables\dataTables.scroller.min.js" />
     <Content Include="Scripts\datatables\jquery.dataTables.js" />

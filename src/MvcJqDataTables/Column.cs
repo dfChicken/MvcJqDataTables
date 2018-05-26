@@ -88,6 +88,12 @@ namespace MvcJqDataTables
             return this.name;
         }
 
+        public Column SetType(string type)
+        {
+            this.type = type;
+            return this;
+        }
+
         public Column SetOrderSequence(List<OrderDirection> orderSequence)
         {
             this._orderSequence = orderSequence;
@@ -176,7 +182,7 @@ namespace MvcJqDataTables
             stringBuilder.AppendFormat("name:'{0}',", (object)this.name).AppendLine();
 
             if (!this.data.IsNullOrWhiteSpace())
-                stringBuilder.AppendFormat("data:'{0}',", (object)this.data).AppendLine();
+                stringBuilder.AppendFormat("data:{0},", (object)this.data).AppendLine();
 
             if (!this.title.IsNullOrWhiteSpace())
                 stringBuilder.AppendFormat("title:'{0}',", (object)this.title).AppendLine();
@@ -195,6 +201,9 @@ namespace MvcJqDataTables
 
             if (!this.render.IsNullOrWhiteSpace())
                 stringBuilder.AppendFormat("render:{0},", (object)this.render).AppendLine();
+
+            if (!this.type.IsNullOrWhiteSpace())
+                stringBuilder.AppendFormat("type:'{0}',", (object)this.type).AppendLine();
 
             #region Options
 

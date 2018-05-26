@@ -14,18 +14,23 @@ namespace MvcJqDataTables
 {
     public class DataTable : IHtmlString
     {
-        //        private const string FILE_FORMAT_REGEX = @"^.*\.[^\\]+$";
+        public static string FILE_FORMAT_REGEX = @"^.*\.[^\\]+$";
+        public static string DEFAULT_BOOTSTRAP_DOM =
+            "<\"top\"<\"row\"<\"col-sm-5\"i><\"col-sm-7\"f>>>rt<\"bottom\"<\"row\"<\"col-sm-5\"l><\"col-sm-7\"p>>>";
+
         private readonly string _id;
         private readonly List<Column> _columns = new List<Column>();
         private bool? _asyncLoad;
         private bool? _isCustomTable = false;
-        private string _externalSearchFormId;
+        private bool? rowNumberEnabled = false;
 
-        public DataTable SetExternalSearchFormId(string extSearchFormId)
-        {
-            this._externalSearchFormId = extSearchFormId;
-            return this;
-        }
+        //        private string _externalSearchFormId;
+        //
+        //        public DataTable SetExternalSearchFormId(string extSearchFormId)
+        //        {
+        //            this._externalSearchFormId = extSearchFormId;
+        //            return this;
+        //        }
 
         #region Data
 
@@ -112,6 +117,12 @@ namespace MvcJqDataTables
         #endregion
 
         #region Methods
+
+        public DataTable SetRowNumbers(bool enabled)
+        {
+            this.rowNumberEnabled = enabled;
+            return this;
+        }
 
         public DataTable SetTabIndex(int tabIndex)
         {
@@ -436,7 +447,7 @@ namespace MvcJqDataTables
             var stringBuilder = new StringBuilder();
             if (!this._url.IsNullOrWhiteSpace())
             {
-                stringBuilder.AppendLine("var dataSource_" + this._id + " = '"+ this._url +"';");
+                stringBuilder.AppendLine("var dataSource_" + this._id + " = '" + this._url + "';");
             }
             stringBuilder.AppendLine("var tableInstance_" + this._id + " = undefined;");
             if (this._asyncLoad.HasValue && this._asyncLoad.Value)
@@ -464,6 +475,8 @@ namespace MvcJqDataTables
                 stringBuilder.AppendFormat("ordering:{0},", (object)this._ordering.ToString().ToLower()).AppendLine();
             if (this._paging.HasValue)
                 stringBuilder.AppendFormat("paging:{0},", (object)this._paging.ToString().ToLower()).AppendLine();
+            if (this._info.HasValue)
+                stringBuilder.AppendFormat("info:{0},", (object)this._info.ToString().ToLower()).AppendLine();
             if (this._scrollX.HasValue)
                 stringBuilder.AppendFormat("scrollX:{0},", (object)this._scrollX.ToString().ToLower()).AppendLine();
             if (this._scrollY.HasValue)
@@ -518,7 +531,7 @@ namespace MvcJqDataTables
                 }
                 if (!this._dataSrc.IsNullOrWhiteSpace())
                 {
-                    stringBuilder.AppendFormat(", dataSrc:'{0}'", (object)this._dataSrc);
+                    stringBuilder.AppendFormat(", dataSrc:{0}", (object)this._dataSrc);
                 }
             }
             stringBuilder.AppendLine("},");
@@ -577,10 +590,9 @@ namespace MvcJqDataTables
                 stringBuilder.AppendFormat("displayStart:{0},", (object)this._displayStart.Value).AppendLine();
 
             if (!this._dom.IsNullOrWhiteSpace())
-                stringBuilder.AppendFormat("dom:{0},", (object)this._dom).AppendLine();
+                stringBuilder.AppendFormat("dom:'{0}',", (object)this._dom).AppendLine();
             else
-                stringBuilder.AppendLine(
-                    "dom:'<\"top\"<\"row\"<\"col-sm-5\"i><\"col-sm-7\"f>>>rt<\"bottom\"<\"row\"<\"col-sm-5\"l><\"col-sm-7\"p>>>',");
+                stringBuilder.AppendFormat("dom:'{0}',", DEFAULT_BOOTSTRAP_DOM).AppendLine();
 
             if (this._lengthMenu != null)
                 stringBuilder.AppendFormat("lengthMenu:[{0}],", (object)string.Join(",", ((IEnumerable<int>)this._lengthMenu).Select<int, string>((Func<int, string>)(p => p.ToString())).ToArray<string>())).AppendLine();
@@ -639,7 +651,17 @@ namespace MvcJqDataTables
             stringBuilder.AppendLine("]");
 
             stringBuilder.AppendLine("});");
-//            stringBuilder.AppendLine("console.log(\'Data Source: \'+ tableInstance_" + this._id + ".ajax.url());");
+            //                stringBuilder.AppendLine("console.log(\'Data Source: \'+ tableInstance_" + this._id + ".ajax.url());");
+//            if (rowNumberEnabled.HasValue && rowNumberEnabled.Value)
+//            {
+//                stringBuilder.AppendLine("tableInstance_" + this._id + ".on(\'order.dt search.dt\', function () {");
+//                stringBuilder.AppendLine(
+//                    "tableInstance_" + this._id + ".column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {");
+//                stringBuilder.AppendLine("cell.innerHTML = i+1;");
+//                stringBuilder.AppendLine("});");
+//                stringBuilder.AppendLine("}).draw();");
+//            }
+
             stringBuilder.AppendLine("});");
             return stringBuilder.ToString();
         }

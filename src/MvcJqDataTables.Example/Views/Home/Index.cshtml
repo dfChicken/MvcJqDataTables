@@ -16,6 +16,15 @@
             console.log(paramStr);
             return $("#frmSearchPost").serialize();
         }
+
+
+        srcFunction = function(json) {
+            for (var i = 0, ien = json.data.length; i < ien; i++) {
+                json.data[i].unshift(i + 1 + json.start);
+            }
+            return json.data;
+        };
+        
     </script>
 }
 
@@ -59,19 +68,28 @@
 
 <div class="row">
     <div class="col-md-12">
-        @(Html.DataTable("SearchResultTable")
-              .SetUrl(Url.Action("GetTestData"))
-              .AddColumn(new Column("Id").SetWidth("10%"))
-              .AddColumn(new Column("Name"))
-              .AddColumn(new Column("Description"))
-              .AddColumn(new Column("Action").SetTitle("Action").SetOrderable(false))
-              .SetLengthMenu(new[] { 5, 10, 15, 20, 50 }).SetPageLength(10)
-              .AddExtraParameters(new List<Parameter>()
-              {
-                  new DataParameter("cc","coincard"),
-                  new FunctionParameter("cc2","executeSearch")
-              })
-              )
+        @{
+            var dataTable = new DataTable("SearchResultTable")
+                .SetUrl(Url.Action("GetTestData"))
+                .AddColumn(new Column("No").SetTitle(" ").SetOrderable(false).SetWidth("6%").SetClassName("text-center"))
+                .AddColumn(new Column("Id").SetWidth("10%"))
+                .AddColumn(new Column("Name"))
+                .AddColumn(new Column("Description"))
+                .AddColumn(new Column("Action").SetTitle("Action").SetOrderable(false))
+                .SetLengthMenu(new[] {5, 10, 15, 20, 50}).SetPageLength(10)
+                .SetDataSrc("srcFunction")
+                .SetOrder(new List<Order>()
+                {
+                    new Order(1, OrderDirection.Asc)
+                })
+                .AddExtraParameters(new List<Parameter>()
+                {
+                    new DataParameter("cc", "coincard"),
+                    new FunctionParameter("cc2", "executeSearch")
+                });
+        }
+
+        @(Html.DataTable(dataTable))
 
     </div>
 </div>

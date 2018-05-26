@@ -19,7 +19,6 @@ namespace MvcJqDataTables.Example.Controllers
         {
             var dt = new PostsData();
             var result = dt.Post.ToList();
-
             var jsonData = GetJsonObject(result.Count(), model, result, p => new IComparable[]
             {
                 p.Id,
@@ -45,6 +44,7 @@ namespace MvcJqDataTables.Example.Controllers
                 recordsTotal = selectQuery.Count,
                 recordsFiltered = selectQuery.Count,
                 data = rows.ToArray(),
+                dt.start
             };
         }
 

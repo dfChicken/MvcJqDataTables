@@ -13,5 +13,10 @@ namespace MvcJqDataTables
         {
             return new DataTable(id);
         }
+
+        public static DataTable DataTable(this HtmlHelper helper, DataTable dataTable)
+        {
+            return dataTable;
+        }
     }
 }
