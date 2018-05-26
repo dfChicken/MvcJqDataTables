@@ -22,7 +22,7 @@ namespace MvcJqDataTables
         private readonly List<Column> _columns = new List<Column>();
         private bool? _asyncLoad;
         private bool? _isCustomTable = false;
-        private bool? rowNumberEnabled = false;
+        private string _tableClass = "table table-striped table-bordered";
 
         //        private string _externalSearchFormId;
         //
@@ -118,9 +118,9 @@ namespace MvcJqDataTables
 
         #region Methods
 
-        public DataTable SetRowNumbers(bool enabled)
+        public DataTable SetTableClass(string clazz)
         {
-            this.rowNumberEnabled = enabled;
+            this._tableClass = clazz;
             return this;
         }
 
@@ -670,7 +670,7 @@ namespace MvcJqDataTables
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendFormat("<table id=\"{0}\" class=\"table table-striped table-bordered\"></table>", (object)this._id).AppendLine();
+            stringBuilder.AppendFormat("<table id=\"{0}\" class=\""+ this._tableClass +"\"></table>", (object)this._id).AppendLine();
 
             return (this._isCustomTable.HasValue && this._isCustomTable.Value) ? "" : stringBuilder.ToString();
         }
